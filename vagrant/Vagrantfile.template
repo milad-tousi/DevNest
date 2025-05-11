@@ -1,0 +1,17 @@
+# Vagrantfile.template
+Vagrant.configure("2") do |config|
+
+  # 📦 Shared Box Configuration
+  config.vm.box_check_update = false
+  config.vm.synced_folder ".", "/vagrant", disabled: true
+
+  # 🐳 Minikube Block (optional)
+  {{MINIKUBE_BLOCK}}
+
+  # 🔧 Jenkins Block (optional)
+  {{JENKINS_BLOCK}}
+
+  # 📊 Monitoring Block (optional)
+  {{MONITORING_BLOCK}}
+
+end

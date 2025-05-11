@@ -1,2 +1,19 @@
-# DevNest
-DevNest is a lightweight and local-first DevOps lab that lets you launch essential tools like Minikube, Jenkins, Prometheus, and Grafana right on your personal machine – with just a few clicks.
+# DevNest – Your Personal DevOps Lab
+
+DevNest is a local-first DevOps platform to help you launch Minikube, Jenkins, and monitoring tools on your own machine in minutes.
+
+## 🚀 Features
+- Launch Minikube, Jenkins, Prometheus, Grafana
+- Web interface for selecting services
+- Auto VM provisioning (Vagrant + KVM/VirtualBox)
+- Lightweight and offline-friendly
+
+## 🧰 Requirements
+- Ubuntu 20.04+
+- VirtualBox or KVM
+- Vagrant
+- 8GB RAM minimum
+
+## 📦 Installation
+```bash
+sudo dpkg -i devnest_1.0.0_amd64.deb

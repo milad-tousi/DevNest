@@ -1,0 +1,6 @@
+  config.vm.define "monitoring" do |monitoring|
+    minikube.vm.box = "generic/ubuntu2204"
+    minikube.vm.hostname = "monitoring.local"
+    minikube.vm.network "private_network", type: "dhcp"
+    minikube.vm.provision "shell", path: "scripts/monitoring.sh"
+  end
