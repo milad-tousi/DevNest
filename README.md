@@ -2,7 +2,8 @@
 
 DevNest is a local-first DevOps platform to help you launch Minikube, Jenkins, and monitoring tools on your own machine in minutes.
 
-https://www.youtube.com/watch?v=eyYm_o-_yRk
+[![Watch the video](https://img.youtube.com/vi/eyYm_o-_yRk/maxresdefault.jpg)](https://www.youtube.com/watch?v=eyYm_o-_yRk)
+
 
 ## 🚀 Features
 - Launch Minikube, Jenkins, Prometheus, Grafana
