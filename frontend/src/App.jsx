@@ -16,8 +16,12 @@ function App() {
     }
 
     const savedToken = localStorage.getItem('token');
+    const savedUsername = localStorage.getItem('username'); // 👈 اضافه کن
+
     if (savedToken) setToken(savedToken);
+    if (savedUsername) setUsername(savedUsername); // 👈 اینم اضافه کن
   }, []);
+
 
 
   const handleLoginSuccess = ({ token, username }) => {

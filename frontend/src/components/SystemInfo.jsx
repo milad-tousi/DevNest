@@ -56,13 +56,16 @@ export default function SystemInfo() {
 
   const { platform, provider, tools } = info;
 
+  const isMissing = (tool) => !tools[tool];
   const missingDeps =
-    !tools.vagrant ||
-    !tools.virtualbox ||
-    (platform === 'linux' && !tools.ansible);
+    isMissing('vagrant') ||
+    isMissing('virtualbox') ||
+    (platform === 'linux' && isMissing('ansible'));
 
   const renderStatus = (label, value) => (
-    <li>{label}: {value ? '✅ Installed' : '❌ Not Installed'}</li>
+    <li>
+      {label}: {value ? '✅ Installed' : '❌ Not Installed'}
+    </li>
   );
 
   return (
@@ -81,12 +84,21 @@ export default function SystemInfo() {
           <button onClick={handleInstall} disabled={installing}>
             {installing ? 'Installing...' : 'Install Requirements'}
           </button>
-          {statusMessage && (
-            <p style={{ marginTop: '1rem', color: installing ? '#888' : '#007b00' }}>
-              {statusMessage}
-            </p>
-          )}
         </>
+      )}
+
+      {statusMessage && (
+        <p
+          style={{
+            marginTop: '1rem',
+            color:
+              statusMessage.startsWith('❌') ? 'crimson' :
+              statusMessage.startsWith('✅') ? 'green' :
+              '#888'
+          }}
+        >
+          {statusMessage}
+        </p>
       )}
     </div>
   );

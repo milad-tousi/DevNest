@@ -1,0 +1,5 @@
+{
+  "minikube": true,
+  "jenkins": true,
+  "monitoring": true
+}

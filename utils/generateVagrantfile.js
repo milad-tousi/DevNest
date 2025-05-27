@@ -1,12 +1,13 @@
 const fs = require('fs');
 const path = require('path');
 
+// 📦 Blocks for each service with static IPs
 const blocks = {
   minikube: () => `
   config.vm.define "minikube" do |minikube|
     minikube.vm.box = "generic/ubuntu2204"
     minikube.vm.hostname = "minikube.local"
-    minikube.vm.network "private_network", type: "dhcp"
+    minikube.vm.network "private_network", ip: "192.168.56.10"
     minikube.vm.provision "shell", path: "scripts/minikube.sh"
   end
   `,
@@ -15,7 +16,7 @@ const blocks = {
   config.vm.define "jenkins" do |jenkins|
     jenkins.vm.box = "generic/ubuntu2204"
     jenkins.vm.hostname = "jenkins.local"
-    jenkins.vm.network "private_network", type: "dhcp"
+    jenkins.vm.network "private_network", ip: "192.168.56.11"
     jenkins.vm.provision "shell", path: "scripts/jenkins.sh"
   end
   `,
@@ -24,12 +25,13 @@ const blocks = {
   config.vm.define "monitoring" do |monitoring|
     monitoring.vm.box = "generic/ubuntu2204"
     monitoring.vm.hostname = "monitoring.local"
-    monitoring.vm.network "private_network", type: "dhcp"
+    monitoring.vm.network "private_network", ip: "192.168.56.12"
     monitoring.vm.provision "shell", path: "scripts/monitoring.sh"
   end
   `
 };
 
+// 📂 Copy provision scripts to target dir
 function copyProvisionScripts(destScriptsDir) {
   const srcScriptsDir = path.join(__dirname, '../vagrant/scripts');
   fs.mkdirSync(destScriptsDir, { recursive: true });
@@ -47,6 +49,7 @@ function copyProvisionScripts(destScriptsDir) {
   }
 }
 
+// 🏗 Generate the Vagrantfile with selected blocks
 function generateVagrantfile(newSelections = {}, options = {}) {
   const { mergePrevious = false, basePath } = options;
 
@@ -89,7 +92,12 @@ function generateVagrantfile(newSelections = {}, options = {}) {
     return;
   }
 
+  // 👇 Detect provider from environment
+  const detectEnv = require('./checkEnvironment');
+  const provider = detectEnv().provider;
+
   const result = template
+    .replace('{{PROVIDER}}', provider)
     .replace('{{MINIKUBE_BLOCK}}', updated.minikube ? blocks.minikube() : '')
     .replace('{{JENKINS_BLOCK}}', updated.jenkins ? blocks.jenkins() : '')
     .replace('{{MONITORING_BLOCK}}', updated.monitoring ? blocks.monitoring() : '');
