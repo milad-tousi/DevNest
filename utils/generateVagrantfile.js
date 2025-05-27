@@ -1,13 +1,19 @@
 const fs = require('fs');
 const path = require('path');
+const detectEnv = require('./checkEnvironment');
 
-// 📦 Blocks for each service with static IPs
-const blocks = {
+// 📦 Dynamically assign IPs based on base range
+function getNextIP(base = '192.168.56.', offset = 10) {
+  return base + offset;
+}
+
+// 🧱 Service Blocks (IPs will be dynamically inserted)
+const blocks = (ipMap) => ({
   minikube: () => `
   config.vm.define "minikube" do |minikube|
     minikube.vm.box = "generic/ubuntu2204"
     minikube.vm.hostname = "minikube.local"
-    minikube.vm.network "private_network", ip: "192.168.56.10"
+    minikube.vm.network "private_network", ip: "${ipMap.minikube}"
     minikube.vm.provision "shell", path: "scripts/minikube.sh"
   end
   `,
@@ -16,7 +22,7 @@ const blocks = {
   config.vm.define "jenkins" do |jenkins|
     jenkins.vm.box = "generic/ubuntu2204"
     jenkins.vm.hostname = "jenkins.local"
-    jenkins.vm.network "private_network", ip: "192.168.56.11"
+    jenkins.vm.network "private_network", ip: "${ipMap.jenkins}"
     jenkins.vm.provision "shell", path: "scripts/jenkins.sh"
   end
   `,
@@ -25,11 +31,11 @@ const blocks = {
   config.vm.define "monitoring" do |monitoring|
     monitoring.vm.box = "generic/ubuntu2204"
     monitoring.vm.hostname = "monitoring.local"
-    monitoring.vm.network "private_network", ip: "192.168.56.12"
+    monitoring.vm.network "private_network", ip: "${ipMap.monitoring}"
     monitoring.vm.provision "shell", path: "scripts/monitoring.sh"
   end
   `
-};
+});
 
 // 📂 Copy provision scripts to target dir
 function copyProvisionScripts(destScriptsDir) {
@@ -92,18 +98,24 @@ function generateVagrantfile(newSelections = {}, options = {}) {
     return;
   }
 
-  // 👇 Detect provider from environment
-  const detectEnv = require('./checkEnvironment');
   const provider = detectEnv().provider;
+
+  // Dynamically assign IPs starting from .10
+  let ipOffset = 10;
+  const ipMap = {};
+  for (const service of ['minikube', 'jenkins', 'monitoring']) {
+    if (updated[service]) {
+      ipMap[service] = getNextIP('192.168.56.', ipOffset++);
+    }
+  }
 
   const result = template
     .replace('{{PROVIDER}}', provider)
-    .replace('{{MINIKUBE_BLOCK}}', updated.minikube ? blocks.minikube() : '')
-    .replace('{{JENKINS_BLOCK}}', updated.jenkins ? blocks.jenkins() : '')
-    .replace('{{MONITORING_BLOCK}}', updated.monitoring ? blocks.monitoring() : '');
+    .replace('{{MINIKUBE_BLOCK}}', updated.minikube ? blocks(ipMap).minikube() : '')
+    .replace('{{JENKINS_BLOCK}}', updated.jenkins ? blocks(ipMap).jenkins() : '')
+    .replace('{{MONITORING_BLOCK}}', updated.monitoring ? blocks(ipMap).monitoring() : '');
 
   fs.mkdirSync(basePath, { recursive: true });
-
   copyProvisionScripts(scriptsPath);
 
   try {
