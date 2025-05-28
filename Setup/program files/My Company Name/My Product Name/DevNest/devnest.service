@@ -1,0 +1,16 @@
+[Unit]
+Description=DevNest Full Stack Service
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/__USER__/.devnest/start-devnest.sh
+WorkingDirectory=/home/__USER__/.devnest/backend
+Restart=always
+StandardOutput=append:/home/__USER__/.devnest/logs/devnest.log
+StandardError=append:/home/__USER__/.devnest/logs/devnest-error.log
+User=__USER__
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,6 @@
+  config.vm.define "monitoring" do |monitoring|
+    monitoring.vm.box = "generic/ubuntu2204"
+    monitoring.vm.hostname = "monitoring.local"
+    monitoring.vm.network "private_network", ip: "${ipMap.monitoring}"
+    minmonitoringkube.vm.provision "shell", path: "scripts/monitoring.sh"
+  end

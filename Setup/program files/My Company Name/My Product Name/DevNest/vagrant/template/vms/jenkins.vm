@@ -1,0 +1,6 @@
+  config.vm.define "jenkins" do |jenkins|
+    jenkins.vm.box = "generic/ubuntu2204"
+    jenkins.vm.hostname = "jenkins.local"
+    jenkins.vm.network "private_network", ip: "${ipMap.jenkins}"
+    jenkins.vm.provision "shell", path: "scripts/jenkins.sh"
+  end
